@@ -10,7 +10,6 @@ fn main() -> Result<()> {
 
         // handle rule-based character substitutions
         let after_subst = do_substitutions(after_swapping)?;
-
         //output
         println!("{}", after_subst);
     }
@@ -18,16 +17,15 @@ fn main() -> Result<()> {
 }
 
 fn do_substitutions(input: String) -> Result<String> {
-    let random_v: &str = vec!["a", "e", "i", "o", "u"][(rand::random::<f64>() / 0.2) as usize];
     let input = replace_prob(input, ("0", "⁰"), 0.40)?;
     let input = replace_prob(input, ("1", "¹"), 0.40)?;
     let input = replace_prob(input, ("2", "²"), 0.40)?;
     let input = replace_prob(input, ("3", "³"), 0.40)?;
     let input = replace_prob(input, ("/", "ᐟ"), 0.40)?;
-    let input = replace_prob(input, ("a", random_v), 0.20)?;
-    let input = replace_prob(input, ("e", random_v), 0.20)?;
-    let input = replace_prob(input, ("i", random_v), 0.20)?;
-    let input = replace_prob(input, ("o", random_v), 0.20)?;
+    let input = replace_prob(input, ("a", &random_vowel_subst()), 0.20)?;
+    let input = replace_prob(input, ("e", &random_vowel_subst()), 0.20)?;
+    let input = replace_prob(input, ("i", &random_vowel_subst()), 0.20)?;
+    let input = replace_prob(input, ("o", &random_vowel_subst()), 0.20)?;
     let input = replace_prob(input, ("E", "€"), 0.20)?;
     let input = replace_prob(input, ("u", "7"), 0.10)?;
     let input = replace_prob(input, ("y", "λ"), 0.10)?;
@@ -35,12 +33,13 @@ fn do_substitutions(input: String) -> Result<String> {
     let input = replace_prob(input, ("b", "p"), 0.10)?;
     let input = replace_prob(input, ("h", "j"), 0.10)?;
     let input = replace_prob(input, ("d", "n"), 0.10)?;
+    let input = replace_prob(input, (",", ""), 0.40)?;
+    let input = replace_prob(input, (".", ","), 0.40)?;
+    let input = replace_prob(input, (" ", ""), 0.10)?;
     let input = replace_prob(input, ("r", "ww"), 0.10)?;
     let input = replace_prob(input, ("ae", "æ"), 0.70)?;
     let input = replace_prob(input, ("ea", "æ"), 0.70)?;
     let input = replace_prob(input, ("and", "&&"), 0.70)?;
-    let input = replace_prob(input, ("gamer", "g*mer"), 1.00)?;
-    let input = replace_prob(input, ("virgin", "v*rgin"), 1.00)?;
     let input = replace_prob(
         input,
         (
@@ -83,8 +82,22 @@ fn swap_chars_in_word(input: &str, prob_per_pair: f64) -> String {
         if pair.len() == 2 && get_random(prob_per_pair) {
             pair.swap(0, 1);
         }
+        // make letters randomly uppercase
+        pair.iter_mut().for_each(|x| random_uppercase(x, 0.02));
     }
     word.iter().collect::<String>()
+}
+
+fn random_uppercase(input: &mut char, prob: f64) -> () {
+    if get_random(prob) {
+        input.make_ascii_uppercase();
+    }
+}
+
+fn random_vowel_subst() -> String {
+    String::from(
+        vec!["a", "e", "i", "o", "u", "*", "^", ""][(rand::random::<f64>() / 0.125) as usize],
+    )
 }
 
 fn get_random(prob: f64) -> bool {

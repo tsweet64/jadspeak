@@ -96,7 +96,7 @@ fn random_uppercase(input: &mut char, prob: f64) -> () {
 
 fn random_vowel_subst() -> String {
     String::from(
-        vec!["a", "e", "i", "o", "u", "*", "^", ""][(rand::random::<f64>() / 0.125) as usize],
+        vec!["a", "e", "i", "o", "u", ""][(rand::random::<f64>() / 0.1666666) as usize],
     )
 }
 
